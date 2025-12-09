@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">User Profile - Healthy Recipes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .header {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .profile-name {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-email {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #4CAF50;
+        }
+        
+        .info-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        
+        .info-value {
+            color: #666;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="logo">🍎 HealthyRecipes</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/recipes">All Recipes</a></li>
+                <li><a href="/recipes/create">Add Recipe</a></li>
+                <li><a href="/users/profile" style="background: rgba(76, 175, 80, 0.1); color: #4CAF50;">Profile</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Error Messages -->
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <div class="profile-header">
+            <div class="profile-avatar" th:text="${#strings.substring(user.username, 0, 1).toUpperCase()}">U</div>
+            <h1 class="profile-name" th:text="${user.username}">Username</h1>
+            <p class="profile-email" th:text="${user.email}">user@example.com</p>
+        </div>
+
+        <div class="profile-content">
+            <!-- Personal Information -->
+            <div class="info-card">
+                <h2 class="card-title">👤 Personal Information</h2>
+                
+                <div class="info-item">
+                    <div class="info-label">Username</div>
+                    <div class="info-value" th:text="${user.username}">username</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value" th:text="${user.email}">user@example.com</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Health Goal</div>
+                    <div class="info-value" th:if="${user.healthGoal}" th:text="${user.healthGoal}">Weight Loss</div>
+                    <div class="info-value" th:unless="${user.healthGoal}" style="color: #999; font-style: italic;">Not specified</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Dietary Preferences</div>
+                    <div class="info-value" th:if="${user.dietaryPreferences}" th:text="${user.dietaryPreferences}">Vegetarian</div>
+                    <div class="info-value" th:unless="${user.dietaryPreferences}" style="color: #999; font-style: italic;">Not specified</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Member Since</div>
+                    <div class="info-value" th:text="${#temporals.format(user.createdAt, 'MMMM dd, yyyy')}">January 01, 2024</div>
+                </div>
+            </div>
+
+            <!-- Activity Stats -->
+            <div class="info-card">
+                <h2 class="card-title">📊 Activity Overview</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Recipes Created</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Recipes Rated</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Favorites</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Total Views</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #333;">Recent Activity</h3>
+                <div class="info-item">
+                    <div class="info-label">Last Login</div>
+                    <div class="info-value">Today, 14:30</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Last Recipe Added</div>
+                    <div class="info-value">Healthy Greek Salad - 2 days ago</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="info-card" style="margin-top: 2rem;">
+            <h2 class="card-title">⚡ Quick Actions</h2>
+            <div class="profile-actions">
+                <a href="/recipes/create" class="btn">➕ Add New Recipe</a>
+                <a href="/users/favorites" class="btn btn-secondary">❤️ My Favorites</a>
+                <a href="/recipes" class="btn btn-secondary">📖 Browse Recipes</a>
+            </div>
+        </div>
+
+        <!-- Health Goals Section -->
+        <div class="info-card" style="margin-top: 2rem;">
+            <h2 class="card-title">🎯 Health & Wellness</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 10px;">
+                    <h3 style="margin-bottom: 0.5rem;">Current Goal</h3>
+                    <p th:if="${user.healthGoal}" th:text="${user.healthGoal}">Weight Management</p>
+                    <p th:unless="${user.healthGoal}" style="font-style: italic;">Set your health goal</p>
+                </div>
+                <div style="padding: 1.5rem; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border-radius: 10px;">
+                    <h3 style="margin-bottom: 0.5rem;">Dietary Plan</h3>
+                    <p th:if="${user.dietaryPreferences}" th:text="${user.dietaryPreferences}">Balanced Diet</p>
+                    <p th:unless="${user.dietaryPreferences}" style="font-style: italic;">Specify preferences</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stat numbers
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.textContent);
+                let current = 0;
+                const increment = target / 50;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    stat.textContent = Math.floor(current);
+                }, 30);
+            });
+
+            // Add hover effects to info items
+            const infoItems = document.querySelectorAll('.info-item');
+            infoItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
